@@ -1,12 +1,17 @@
 version: '3.8'
 
 services:
+
   prometheus:
     image: prom/prometheus:v2.30.3
     container_name: prometheus
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
+      - type: bind
+        source: /data/monitoring/prometheus.yml
+        target: /etc/prometheus/prometheus.yml
+      - type: volume
+        source: prometheus_data
+        target: /prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -17,6 +22,7 @@ services:
     restart: unless-stopped
     networks:
       - monitoring
+
   grafana:
     image: grafana/grafana:8.2.2
     container_name: grafana
@@ -35,6 +41,7 @@ services:
 networks:
   monitoring:
     driver: bridge
+
 volumes:
   prometheus_data:
   grafana_data:
